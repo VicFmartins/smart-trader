@@ -1,0 +1,16 @@
+{
+  "Records": [
+    {
+      "eventSource": "aws:s3",
+      "eventName": "ObjectCreated:Put",
+      "s3": {
+        "bucket": {
+          "name": "carteiraconsol-vi-001"
+        },
+        "object": {
+          "key": "incoming%2Fsample_portfolio.csv"
+        }
+      }
+    }
+  ]
+}

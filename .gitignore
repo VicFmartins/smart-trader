@@ -1,0 +1,73 @@
+# ── Secrets & environment ──────────────────────────────────────────────────
+.env
+.env.local
+.env.docker
+.env.*.local
+
+# ── Python ────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual environments ───────────────────────────────────────────────────
+.venv/
+venv/
+env/
+ENV/
+
+# ── Databases & local data ─────────────────────────────────────────────────
+*.db
+*.sqlite3
+*.sqlite
+data/raw/*
+!data/raw/.gitkeep
+data/processed/*
+!data/processed/.gitkeep
+data/real_inputs/*
+!data/real_inputs/.gitkeep
+
+# ── Temporary & scratch files ──────────────────────────────────────────────
+tmp_*
+.tmp_*
+*.tmp
+*.temp
+*.bak
+*.log
+
+# ── PDF & binary uploads (do not commit sample/test PDFs) ─────────────────
+*.pdf
+
+# ── Testing & coverage ────────────────────────────────────────────────────
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# ── OS / Editor ────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# ── Node / Frontend ────────────────────────────────────────────────────────
+node_modules/
+frontend/node_modules/
+frontend/dist/
+frontend/*.tsbuildinfo
+frontend/vite.config.js
+frontend/vite.config.d.ts
+
+# ── Claude Code internal ───────────────────────────────────────────────────
+.claude/
+
+# ── Legacy sub-project ────────────────────────────────────────────────────
+carteiraconsol/

@@ -1,0 +1,121 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: CarteiraConsol ingestion baseline for S3 -> SQS -> Lambda processing.
+
+Globals:
+  Function:
+    Runtime: python3.13
+    Architectures:
+      - x86_64
+    Timeout: 900
+    MemorySize: 1024
+    Tracing: Active
+    Environment:
+      Variables:
+        APP_ENV: production
+        LOG_LEVEL: INFO
+        RAW_STORAGE_MODE: s3
+        AWS_DEFAULT_REGION: !Ref AWS::Region
+        S3_BUCKET_NAME: !Ref RawBucketName
+        S3_BUCKET_PREFIX: !Ref RawBucketPrefix
+        DATABASE_URL: !Ref DatabaseUrl
+        JWT_SECRET_KEY: !Ref JwtSecretKey
+        JWT_ALGORITHM: HS256
+        JWT_ACCESS_TOKEN_EXPIRE_MINUTES: "60"
+        AUTO_CREATE_TABLES: "false"
+
+Parameters:
+  RawBucketName:
+    Type: String
+    Description: Existing S3 bucket name that receives raw portfolio files.
+  RawBucketPrefix:
+    Type: String
+    Default: incoming/
+    Description: Prefix observed by ingestion.
+  DatabaseUrl:
+    Type: String
+    NoEcho: true
+    Description: SQLAlchemy PostgreSQL URL for the application database.
+  JwtSecretKey:
+    Type: String
+    NoEcho: true
+    Description: JWT signing secret reused by the ingestion codebase config.
+
+Resources:
+  IngestionDlq:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: carteiraconsol-ingestion-dlq
+      MessageRetentionPeriod: 1209600
+
+  IngestionQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      QueueName: carteiraconsol-ingestion-queue
+      VisibilityTimeout: 960
+      RedrivePolicy:
+        deadLetterTargetArn: !GetAtt IngestionDlq.Arn
+        maxReceiveCount: 3
+
+  IngestionQueuePolicy:
+    Type: AWS::SQS::QueuePolicy
+    Properties:
+      Queues:
+        - !Ref IngestionQueue
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AllowS3SendMessage
+            Effect: Allow
+            Principal:
+              Service: s3.amazonaws.com
+            Action: sqs:SendMessage
+            Resource: !GetAtt IngestionQueue.Arn
+            Condition:
+              ArnEquals:
+                aws:SourceArn: !Sub arn:aws:s3:::${RawBucketName}
+
+  EtlIngestionFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: carteiraconsol-etl-ingestion
+      CodeUri: .
+      Handler: app.lambda_handlers.etl_handler.handler
+      Description: Processes S3/SQS ingestion events and executes the ETL pipeline.
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - Statement:
+            - Effect: Allow
+              Action:
+                - s3:GetObject
+                - s3:GetObjectVersion
+              Resource: !Sub arn:aws:s3:::${RawBucketName}/*
+            - Effect: Allow
+              Action:
+                - s3:ListBucket
+              Resource: !Sub arn:aws:s3:::${RawBucketName}
+      Events:
+        IngestionQueueEvent:
+          Type: SQS
+          Properties:
+            Queue: !GetAtt IngestionQueue.Arn
+            BatchSize: 1
+            FunctionResponseTypes:
+              - ReportBatchItemFailures
+
+Outputs:
+  IngestionQueueUrl:
+    Description: SQS queue that should receive S3 notifications.
+    Value: !Ref IngestionQueue
+
+  IngestionQueueArn:
+    Description: SQS queue ARN for wiring S3 bucket notifications.
+    Value: !GetAtt IngestionQueue.Arn
+
+  IngestionDlqUrl:
+    Description: Dead-letter queue for failed ingestion events.
+    Value: !Ref IngestionDlq
+
+  EtlIngestionFunctionArn:
+    Description: Lambda ARN for ETL ingestion processing.
+    Value: !GetAtt EtlIngestionFunction.Arn

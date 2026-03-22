@@ -1,0 +1,7 @@
+Cliente;Corretora;Ativo;Ticker;Qtd;Preço Médio;Valor Total;Data de Referência;Perfil
+Maria Oliveira;XP;Tesouro Selic 2029;SELIC29;15;10.250,33;153.754,95;15/03/2026;moderado
+Maria Oliveira;XP;PETR4;PETR4;120;36,45;4.374,00;15/03/2026;moderado
+João Mendes;BTG;Fundo Imobiliário XPML11;XPML11;80;108,10;8.648,00;15/03/2026;conservador
+Ana Costa;Avenue;Bitcoin;BTC;0,35;412.000,00;144.200,00;15/03/2026;arrojado
+Ana Costa;Itaú;CDB Banco Itaú 2028;CDBITAU28;10;1.050,00;10.500,00;15/03/2026;moderado
+Rafael Souza;Crypto;Ethereum;ETH;1,75;21.500,50;37.625,88;15/03/2026;arrojado

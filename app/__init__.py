@@ -1,0 +1,1 @@
+"""Smart Trade application package."""

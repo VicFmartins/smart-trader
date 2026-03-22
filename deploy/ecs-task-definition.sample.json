@@ -1,0 +1,67 @@
+{
+  "family": "carteiraconsol-api",
+  "networkMode": "awsvpc",
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "512",
+  "memory": "1024",
+  "executionRoleArn": "arn:aws:iam::123456789012:role/carteiraconsol-ecs-execution",
+  "taskRoleArn": "arn:aws:iam::123456789012:role/carteiraconsol-api-task",
+  "containerDefinitions": [
+    {
+      "name": "api",
+      "image": "123456789012.dkr.ecr.us-east-1.amazonaws.com/carteiraconsol-api:latest",
+      "essential": true,
+      "portMappings": [
+        {
+          "containerPort": 8000,
+          "hostPort": 8000,
+          "protocol": "tcp"
+        }
+      ],
+      "command": [
+        "/bin/sh",
+        "-c",
+        "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port 8000"
+      ],
+      "environment": [
+        { "name": "APP_ENV", "value": "production" },
+        { "name": "LOG_LEVEL", "value": "INFO" },
+        { "name": "RAW_STORAGE_MODE", "value": "s3" },
+        { "name": "S3_BUCKET_NAME", "value": "carteiraconsol-raw-prod" },
+        { "name": "S3_BUCKET_PREFIX", "value": "incoming/" },
+        { "name": "AWS_DEFAULT_REGION", "value": "us-east-1" },
+        { "name": "JWT_ALGORITHM", "value": "HS256" },
+        { "name": "JWT_ACCESS_TOKEN_EXPIRE_MINUTES", "value": "60" },
+        { "name": "AUTO_CREATE_TABLES", "value": "false" }
+      ],
+      "secrets": [
+        {
+          "name": "DATABASE_URL",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:123456789012:secret:carteiraconsol/database-url"
+        },
+        {
+          "name": "JWT_SECRET_KEY",
+          "valueFrom": "arn:aws:secretsmanager:us-east-1:123456789012:secret:carteiraconsol/jwt-secret"
+        }
+      ],
+      "healthCheck": {
+        "command": [
+          "CMD-SHELL",
+          "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health').read()\" || exit 1"
+        ],
+        "interval": 30,
+        "timeout": 5,
+        "retries": 3,
+        "startPeriod": 30
+      },
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/carteiraconsol-api",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "api"
+        }
+      }
+    }
+  ]
+}
