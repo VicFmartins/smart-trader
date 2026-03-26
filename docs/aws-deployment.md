@@ -75,7 +75,7 @@ Forcing the whole API into Lambda would add complexity around cold starts, reque
 
 Mangum should stay optional.
 
-The repository already includes [app/lambda_handlers/api_handler.py](C:/Users/vitor/OneDrive/Documentos/Playground/app/lambda_handlers/api_handler.py), which exposes the FastAPI app through Lambda when needed. That is useful for experiments or edge deployments, but the recommended production path remains:
+The repository already includes [app/lambda_handlers/api_handler.py](../app/lambda_handlers/api_handler.py), which exposes the FastAPI app through Lambda when needed. That is useful for experiments or edge deployments, but the recommended production path remains:
 
 - FastAPI on ECS Fargate
 - ETL ingestion on Lambda
@@ -99,7 +99,7 @@ Minimum baseline:
 
 ## Environment Variables
 
-Use [.env.aws.example](C:/Users/vitor/OneDrive/Documentos/Playground/.env.aws.example) as the baseline.
+Use [.env.aws.example](../.env.aws.example) as the baseline.
 
 Important values:
 
@@ -147,8 +147,8 @@ Recommended production flow:
 2. S3 emits an object-created notification.
 3. The notification is sent to SQS.
 4. Lambda polls SQS and receives the wrapped S3 event.
-5. [app.lambda_handlers.etl_handler](C:/Users/vitor/OneDrive/Documentos/Playground/app/lambda_handlers/etl_handler.py) parses the event.
-6. [ETLService.run_from_lambda_invocation](C:/Users/vitor/OneDrive/Documentos/Playground/app/services/etl_service.py) routes processing to the real ETL pipeline.
+5. [app.lambda_handlers.etl_handler](../app/lambda_handlers/etl_handler.py) parses the event.
+6. [ETLService.run_from_lambda_invocation](../app/services/etl_service.py) routes processing to the real ETL pipeline.
 7. The ETL downloads the object, processes it, loads PostgreSQL, and persists `ingestion_reports`.
 
 Operationally useful metadata remains available:
@@ -199,7 +199,7 @@ Future extension point:
 
 ## SAM Baseline Included
 
-The repository includes [template.yaml](C:/Users/vitor/OneDrive/Documentos/Playground/template.yaml) for the ingestion side only.
+The repository includes [template.yaml](../template.yaml) for the ingestion side only.
 
 It defines:
 
@@ -249,7 +249,7 @@ aws s3api put-bucket-notification-configuration \
 
 First production target:
 
-- package the backend with the existing [Dockerfile](C:/Users/vitor/OneDrive/Documentos/Playground/Dockerfile)
+- package the backend with the existing [Dockerfile](../Dockerfile)
 - push the image to ECR
 - run the API on ECS Fargate behind an ALB
 
@@ -299,7 +299,7 @@ Recommended order for the first AWS rollout:
 4. Build and push the backend container image to ECR.
 5. Deploy the ECS Fargate API service.
 6. Run database migrations with `alembic upgrade head`.
-7. Create the first admin user with [scripts/create_admin.py](C:/Users/vitor/OneDrive/Documentos/Playground/scripts/create_admin.py).
+7. Create the first admin user with [scripts/create_admin.py](../scripts/create_admin.py).
 8. Build and deploy the frontend static app.
 9. Configure frontend API origin.
 10. Wire S3 notifications to SQS and validate Lambda ingestion.
@@ -334,9 +334,9 @@ Run this from:
 
 The repository already includes local invocation support for the Lambda ingestion path:
 
-- [scripts/invoke_lambda_etl.py](C:/Users/vitor/OneDrive/Documentos/Playground/scripts/invoke_lambda_etl.py)
-- [tests/fixtures/lambda_s3_event.json](C:/Users/vitor/OneDrive/Documentos/Playground/tests/fixtures/lambda_s3_event.json)
-- [tests/fixtures/lambda_sqs_s3_event.json](C:/Users/vitor/OneDrive/Documentos/Playground/tests/fixtures/lambda_sqs_s3_event.json)
+- [scripts/invoke_lambda_etl.py](../scripts/invoke_lambda_etl.py)
+- [tests/fixtures/lambda_s3_event.json](../tests/fixtures/lambda_s3_event.json)
+- [tests/fixtures/lambda_sqs_s3_event.json](../tests/fixtures/lambda_sqs_s3_event.json)
 
 Examples:
 

@@ -133,7 +133,7 @@ PDF upload
 ### 1. Clone o repositório
 
 ```bash
-git clone https://github.com/VicFmartins/smart-trader.git
+git clone <url-do-repositorio>
 cd smart-trader
 ```
 

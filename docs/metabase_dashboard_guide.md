@@ -10,7 +10,7 @@ It assumes these PostgreSQL analytics views already exist:
 - `analytics_positions_by_client`
 - `analytics_portfolio_totals_by_reference_date`
 
-Use this guide together with [metabase_dashboard_queries.sql](C:/Users/vitor/OneDrive/Documentos/Playground/carteiraconsol/sql/metabase_dashboard_queries.sql).
+Use this guide together with [metabase_dashboard_queries.sql](../carteiraconsol/sql/metabase_dashboard_queries.sql).
 
 ## Design Goal
 
@@ -104,7 +104,7 @@ Usage guidance:
 1. Prepare data and views:
 
 ```powershell
-cd C:\Users\vitor\OneDrive\Documentos\Playground\carteiraconsol
+cd carteiraconsol
 python scripts/init_db.py
 python scripts/run_etl.py --sample
 python scripts/create_analytics_views.py
@@ -136,7 +136,7 @@ http://localhost:3001
 
 - `CarteiraConsol / Executive Dashboard`
 
-6. Use the SQL editor and copy the card queries from [metabase_dashboard_queries.sql](C:/Users/vitor/OneDrive/Documentos/Playground/carteiraconsol/sql/metabase_dashboard_queries.sql).
+6. Use the SQL editor and copy the card queries from [metabase_dashboard_queries.sql](../carteiraconsol/sql/metabase_dashboard_queries.sql).
 
 7. Save each question with the names below.
 
@@ -456,7 +456,7 @@ Layout guidance:
 For each SQL query:
 
 1. Open the SQL editor in Metabase.
-2. Paste the query from [metabase_dashboard_queries.sql](C:/Users/vitor/OneDrive/Documentos/Playground/carteiraconsol/sql/metabase_dashboard_queries.sql).
+2. Paste the query from [metabase_dashboard_queries.sql](../carteiraconsol/sql/metabase_dashboard_queries.sql).
 3. Configure variables as Field Filters where applicable.
 4. Run the query.
 5. Choose the recommended chart type.
